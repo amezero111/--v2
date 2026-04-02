@@ -22,11 +22,16 @@ Dialog DLL:      TCM.DLL V1.32.0.0
  
 <h2>Project:</h2>
 C:\Users\AMEzero\Desktop\µ×ÅÌv2\vison-main\Engineer\MDK-ARM\Engineer.uvprojx
-Project File Date:  04/01/2026
+Project File Date:  04/02/2026
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\keilMDK\ARM\Version5.06\Bin'
 Build target 'Engineer'
+compiling DJI_motor.c...
+compiling controller.c...
+..\MODULE\algorithm\controller.c(20): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+      pid->ITerm = pid->Ki * ((pid->Err + pid->Last_Err) / 2.0) * pid->dt;
+..\MODULE\algorithm\controller.c: 1 warning, 0 errors
 compiling Test.c...
 ../APPLICATION/nac.h(107): warning:  #1295-D: Deprecated declaration NacSend - give arg types
   void NacSend();
@@ -39,71 +44,23 @@ compiling Test.c...
 ..\APPLICATION\Test.c(44): warning:  #223-D: function "ChassisTest_OldVersion" declared implicitly
   	ChassisTest_OldVersion();
 ..\APPLICATION\Test.c: 5 warnings, 0 errors
-compiling remote.c...
-compiling nac.c...
-nac.h(107): warning:  #1295-D: Deprecated declaration NacSend - give arg types
-  void NacSend();
-nac.h(117): warning:  #1-D: last line of file ends without a newline
-  #endif
-nac.c: 2 warnings, 0 errors
 compiling arm.c...
 ../APPLICATION/nac.h(107): warning:  #1295-D: Deprecated declaration NacSend - give arg types
   void NacSend();
 ../APPLICATION/nac.h(117): warning:  #1-D: last line of file ends without a newline
   #endif
 ..\APPLICATION\arm\arm.c: 2 warnings, 0 errors
+compiling motor_task.c...
 compiling robot_cmd.c...
 ../APPLICATION/nac.h(107): warning:  #1295-D: Deprecated declaration NacSend - give arg types
   void NacSend();
 ../APPLICATION/nac.h(117): warning:  #1-D: last line of file ends without a newline
   #endif
 ..\APPLICATION\cmd\robot_cmd.c: 2 warnings, 0 errors
-compiling freertos.c...
-../APPLICATION/nac.h(107): warning:  #1295-D: Deprecated declaration NacSend - give arg types
-  void NacSend();
-../APPLICATION/nac.h(117): warning:  #1-D: last line of file ends without a newline
-  #endif
-../APPLICATION/Test.h(5): warning:  #1295-D: Deprecated declaration all_init_Task - give arg types
-  void all_init_Task();
-../APPLICATION/Test.h(6): warning:  #1295-D: Deprecated declaration all_cmd_Task - give arg types
-  void all_cmd_Task();
-../Core/Src/freertos.c: 4 warnings, 0 errors
-compiling main.c...
-../APPLICATION/nac.h(107): warning:  #1295-D: Deprecated declaration NacSend - give arg types
-  void NacSend();
-../APPLICATION/nac.h(117): warning:  #1-D: last line of file ends without a newline
-  #endif
-../APPLICATION/Test.h(5): warning:  #1295-D: Deprecated declaration all_init_Task - give arg types
-  void all_init_Task();
-../APPLICATION/Test.h(6): warning:  #1295-D: Deprecated declaration all_cmd_Task - give arg types
-  void all_cmd_Task();
-../Core/Src/main.c: 4 warnings, 0 errors
-compiling chassis.c...
-../APPLICATION/nac.h(107): warning:  #1295-D: Deprecated declaration NacSend - give arg types
-  void NacSend();
-../APPLICATION/nac.h(117): warning:  #1-D: last line of file ends without a newline
-  #endif
-..\APPLICATION\chassis\chassis.c(33): warning:  #188-D: enumerated type mixed with another type
-                  .Improve       = PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement,
-..\APPLICATION\chassis\chassis.c(41): warning:  #188-D: enumerated type mixed with another type
-                  .Improve       = PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement,
-..\APPLICATION\chassis\chassis.c(49): warning:  #188-D: enumerated type mixed with another type
-              .close_loop_type       = CURRENT_LOOP | SPEED_LOOP,
-..\APPLICATION\chassis\chassis.c(81): warning:  #188-D: enumerated type mixed with another type
-                  .Improve           = PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement | PID_DerivativeFilter | PID_ChangingIntegrationRate,
-..\APPLICATION\chassis\chassis.c(91): warning:  #188-D: enumerated type mixed with another type
-                  .Improve       = PID_Integral_Limit | PID_Derivative_On_Measurement | PID_ChangingIntegrationRate | PID_OutputFilter,
-..\APPLICATION\chassis\chassis.c(122): warning:  #188-D: enumerated type mixed with another type
-              .close_loop_type       = SPEED_LOOP | ANGLE_LOOP,
-..\APPLICATION\chassis\chassis.c(143): warning:  #188-D: enumerated type mixed with another type
-          .Improve           = PID_Trapezoid_Intergral | PID_DerivativeFilter | PID_DerivativeFilter | PID_Derivative_On_Measurement | PID_Integral_Limit | PID_Derivative_On_Measurement,
-..\APPLICATION\chassis\chassis.c(193): warning:  #546-D: transfer of control bypasses initialization of:
-            variable "target_error"  (declared at line 220)
-      switch(chassis_ctrl_cmd.correct_mode)
-      ^
-..\APPLICATION\chassis\chassis.c(269): warning:  #177-D: function "SteeringWheelCalculate"  was declared but never referenced
-  static void SteeringWheelCalculate()
-..\APPLICATION\chassis\chassis.c: 11 warnings, 0 errors
+compiling dmmotor.c...
+..\MODULE\motor\DMmotor\dmmotor.c(12): warning:  #550-D: variable "dm_task_handle"  was set but never used
+  static osThreadId dm_task_handle[DM_MOTOR_CNT];
+..\MODULE\motor\DMmotor\dmmotor.c: 1 warning, 0 errors
 compiling shoot.c...
 ../APPLICATION/nac.h(107): warning:  #1295-D: Deprecated declaration NacSend - give arg types
   void NacSend();
@@ -160,10 +117,47 @@ compiling shoot.c...
 ..\APPLICATION\shoot\shoot.c(218): warning:  #177-D: function "MinmizeRotation"  was declared but never referenced
   static void MinmizeRotation(int *angle, uint16_t *last_angle, float *speed)
 ..\APPLICATION\shoot\shoot.c: 27 warnings, 0 errors
+compiling ins_task.c...
+compiling freertos.c...
+../APPLICATION/nac.h(107): warning:  #1295-D: Deprecated declaration NacSend - give arg types
+  void NacSend();
+../APPLICATION/nac.h(117): warning:  #1-D: last line of file ends without a newline
+  #endif
+../APPLICATION/Test.h(5): warning:  #1295-D: Deprecated declaration all_init_Task - give arg types
+  void all_init_Task();
+../APPLICATION/Test.h(6): warning:  #1295-D: Deprecated declaration all_cmd_Task - give arg types
+  void all_cmd_Task();
+../Core/Src/freertos.c: 4 warnings, 0 errors
+compiling chassis.c...
+../APPLICATION/nac.h(107): warning:  #1295-D: Deprecated declaration NacSend - give arg types
+  void NacSend();
+../APPLICATION/nac.h(117): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\APPLICATION\chassis\chassis.c(33): warning:  #188-D: enumerated type mixed with another type
+                  .Improve       = PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement,
+..\APPLICATION\chassis\chassis.c(41): warning:  #188-D: enumerated type mixed with another type
+                  .Improve       = PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement,
+..\APPLICATION\chassis\chassis.c(49): warning:  #188-D: enumerated type mixed with another type
+              .close_loop_type       = CURRENT_LOOP | SPEED_LOOP,
+..\APPLICATION\chassis\chassis.c(81): warning:  #188-D: enumerated type mixed with another type
+                  .Improve           = PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement | PID_DerivativeFilter | PID_ChangingIntegrationRate,
+..\APPLICATION\chassis\chassis.c(91): warning:  #188-D: enumerated type mixed with another type
+                  .Improve       = PID_Integral_Limit | PID_Derivative_On_Measurement | PID_ChangingIntegrationRate | PID_OutputFilter,
+..\APPLICATION\chassis\chassis.c(122): warning:  #188-D: enumerated type mixed with another type
+              .close_loop_type       = SPEED_LOOP | ANGLE_LOOP,
+..\APPLICATION\chassis\chassis.c(143): warning:  #188-D: enumerated type mixed with another type
+          .Improve           = PID_Trapezoid_Intergral | PID_DerivativeFilter | PID_DerivativeFilter | PID_Derivative_On_Measurement | PID_Integral_Limit | PID_Derivative_On_Measurement,
+..\APPLICATION\chassis\chassis.c(193): warning:  #546-D: transfer of control bypasses initialization of:
+            variable "target_error"  (declared at line 220)
+      switch(chassis_ctrl_cmd.correct_mode)
+      ^
+..\APPLICATION\chassis\chassis.c(269): warning:  #177-D: function "SteeringWheelCalculate"  was declared but never referenced
+  static void SteeringWheelCalculate()
+..\APPLICATION\chassis\chassis.c: 11 warnings, 0 errors
 linking...
 Program Size: Code=63468 RO-data=3876 RW-data=1440 ZI-data=97312  
 FromELF: creating hex file...
-"Engineer\Engineer.axf" - 0 Error(s), 57 Warning(s).
+"Engineer\Engineer.axf" - 0 Error(s), 53 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -186,7 +180,7 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE:5.0.1
-Build Time Elapsed:  00:00:09
+Build Time Elapsed:  00:00:10
 </pre>
 </body>
 </html>
