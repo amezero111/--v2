@@ -86,3 +86,4 @@ engineer\chassis.o: D:\keilMDK\ARM\Version5.06\Bin\..\include\stdio.h
 engineer\chassis.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_core.h
 engineer\chassis.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h
 engineer\chassis.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h
+engineer\chassis.o: ../MODULE/general_def.h

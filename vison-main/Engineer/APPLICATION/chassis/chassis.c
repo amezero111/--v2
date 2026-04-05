@@ -7,20 +7,104 @@
 #include "robot_def.h"
 #include "nac.h"
 #include "usb.h" // 引入USB模块
+#include "usart.h"
+#include "general_def.h"
+#include "string.h"
 
 RC_ctrl_t *rc_cmd;
-static DJIMotor_Instance *motor_lf, *motor_rf, *motor_lb, *motor_rb;                                     // left right forward back
-static DJIMotor_Instance *motor_steering_lf, *motor_steering_rf, *motor_steering_lb, *motor_steering_rb; // 6020电机 
-static PID_Instance chassis_follow_pid;  // 底盘跟随PID
-static float vt_lf, vt_rf, vt_lb, vt_rb; // 底盘速度解算后的临时输出,待进行限幅
-static float at_lf, at_rf, at_lb, at_rb; // 底盘的角度解算后的临时输出,待进行限幅
+ DJIMotor_Instance *motor_lf, *motor_rf, *motor_lb, *motor_rb;                                     // left right forward back
+ DJIMotor_Instance *motor_steering_lf, *motor_steering_rf, *motor_steering_lb, *motor_steering_rb; // 6020电机 
+ PID_Instance chassis_follow_pid;  // 底盘跟随PID
+ float vt_lf, vt_rf, vt_lb, vt_rb; // 底盘速度解算后的临时输出,待进行限幅
+ float at_lf, at_rf, at_lb, at_rb; // 底盘的角度解算后的临时输出,待进行限幅
 
+static uint8_t vofa_motor_index = 0;
 Chassis_Ctrl_Cmd_s chassis_ctrl_cmd;
+
+static float WrapDeg180(float deg)
+{
+    while (deg > 180.0f) {
+        deg -= 360.0f;
+    }
+    while (deg <= -180.0f) {
+        deg += 360.0f;
+    }
+    return deg;
+}
+
+void ChassisVofaSend(void)
+{
+    static uint32_t last_send_ms = 0;
+    uint32_t now_ms = HAL_GetTick();
+    if ((now_ms - last_send_ms) < 20) {
+        return;
+    }
+    last_send_ms = now_ms;
+
+    DJIMotor_Instance *m = NULL;
+    uint8_t is_steering = 0;
+
+    switch (vofa_motor_index) {
+        case 0: m = motor_lf; break;
+        case 1: m = motor_rf; break;
+        case 2: m = motor_lb; break;
+        case 3: m = motor_rb; break;
+        case 4: m = motor_steering_lf; is_steering = 1; break;
+        case 5: m = motor_steering_rf; is_steering = 1; break;
+        case 6: m = motor_steering_lb; is_steering = 1; break;
+        case 7: m = motor_steering_rb; is_steering = 1; break;
+        default: m = motor_lf; break;
+    }
+
+    if (m == NULL) {
+        return;
+    }
+
+    float c1 = 0;
+    float c2 = 0;
+    float c3 = 0;
+    float c4 = 0;
+
+    if (is_steering) {
+        float align = 0;
+        switch (vofa_motor_index) {
+            case 4: align = STEERING_CHASSIS_ALIGN_ANGLE_3; break;
+            case 5: align = STEERING_CHASSIS_ALIGN_ANGLE_1; break;
+            case 6: align = STEERING_CHASSIS_ALIGN_ANGLE_1; break;
+            case 7: align = STEERING_CHASSIS_ALIGN_ANGLE_2; break;
+            default: align = 0; break;
+        }
+
+        c1 = WrapDeg180(m->motor_controller.angle_PID.Ref - align);
+        c2 = WrapDeg180(m->measure.total_angle - align);
+        c3 = m->motor_controller.speed_PID.Ref / RPM_2_ANGLE_PER_SEC;
+        c4 = m->measure.speed_aps / RPM_2_ANGLE_PER_SEC;
+    } else {
+        c1 = m->motor_controller.speed_PID.Ref / RPM_2_ANGLE_PER_SEC;
+        c2 = m->measure.speed_aps / RPM_2_ANGLE_PER_SEC;
+        c3 = m->motor_controller.current_PID.Ref;
+        c4 = m->measure.real_current;
+    }
+
+    float data[4] = {c1, c2, c3, c4};
+    uint8_t buf[4 * 4 + 4];
+    memcpy(&buf[0], &data[0], 4);
+    memcpy(&buf[4], &data[1], 4);
+    memcpy(&buf[8], &data[2], 4);
+    memcpy(&buf[12], &data[3], 4);
+    buf[4 * 4 + 0] = 0x00;
+    buf[4 * 4 + 1] = 0x00;
+    buf[4 * 4 + 2] = 0x80;
+    buf[4 * 4 + 3] = 0x7F;
+
+    HAL_UART_Transmit(&huart1, buf, sizeof(buf), 100);
+}
 
 void ChassisInit()
 {
 	    USB_Init(); // 初始化USB模块
 		rc_cmd = RemoteControlInit(&huart3);
+	// 四个轮子的参数一样,改tx_id和反转标志位即可
 	// 四个轮子的参数一样,改tx_id和反转标志位即可
     Motor_Init_Config_s chassis_motor_config = {
         .can_init_config.can_handle   = &hcan2,

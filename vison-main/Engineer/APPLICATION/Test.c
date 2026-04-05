@@ -43,6 +43,7 @@ void all_cmd_Task(){
 	//ChassisTask();
 	ChassisTest_OldVersion();
 	DJIMotorControl();
+	ChassisVofaSend();
 //	ShootTask();
 	
 }
