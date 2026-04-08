@@ -3,19 +3,19 @@
         {
             "name": "Engineer",
             "includePath": [
-                "${workspaceFolder}/Core/Inc",
-                "${workspaceFolder}/Drivers/STM32F4xx_HAL_Driver/Inc",
-                "${workspaceFolder}/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy",
-                "${workspaceFolder}/Drivers/CMSIS/Device/ST/STM32F4xx/Include",
-                "${workspaceFolder}/Drivers/CMSIS/Include",
-                "${workspaceFolder}/MODULE/**",
-                "${workspaceFolder}/BSP/**",
-                "${workspaceFolder}/APPLICATION/**",
-                "${workspaceFolder}/Middlewares/Third_Party/FreeRTOS/Source/include",
-                "${workspaceFolder}/Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F",
-                "${workspaceFolder}/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS",
-                "${workspaceFolder}/Middlewares/ST/ARM/DSP/Inc",
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/Engineer/Core/Inc",
+                "${workspaceFolder}/Engineer/Drivers/STM32F4xx_HAL_Driver/Inc",
+                "${workspaceFolder}/Engineer/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy",
+                "${workspaceFolder}/Engineer/Drivers/CMSIS/Device/ST/STM32F4xx/Include",
+                "${workspaceFolder}/Engineer/Drivers/CMSIS/Include",
+                "${workspaceFolder}/Engineer/MODULE/**",
+                "${workspaceFolder}/Engineer/BSP/**",
+                "${workspaceFolder}/Engineer/APPLICATION/**",
+                "${workspaceFolder}/Engineer/Middlewares/Third_Party/FreeRTOS/Source/include",
+                "${workspaceFolder}/Engineer/Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F",
+                "${workspaceFolder}/Engineer/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS",
+                "${workspaceFolder}/Engineer/Middlewares/ST/ARM/DSP/Inc",
+                "${workspaceFolder}/Engineer/**"
             ],
             "defines": [
                 "USE_HAL_DRIVER",
@@ -29,7 +29,7 @@
             "intelliSenseMode": "gcc-arm",
             "browse": {
                 "path": [
-                    "${workspaceFolder}/**"
+                    "${workspaceFolder}/Engineer/**"
                 ],
                 "limitSymbolsToIncludedHeaders": false
             }

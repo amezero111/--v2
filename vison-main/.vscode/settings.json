@@ -16,5 +16,5 @@
         "**/MDK-ARM/Engineer/*.o": true,
         "**/MDK-ARM/Engineer/*.lst": true
     },
-    "cmake.sourceDirectory": "C:/Users/11737/Desktop/Engineer/Drivers/CMSIS/NN"
+    "cmake.sourceDirectory": "${workspaceFolder}/Engineer"
 }
