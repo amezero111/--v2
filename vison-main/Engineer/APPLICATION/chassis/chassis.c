@@ -18,7 +18,7 @@ RC_ctrl_t *rc_cmd;
  float vt_lf, vt_rf, vt_lb, vt_rb; // 底盘速度解算后的临时输出,待进行限幅
  float at_lf, at_rf, at_lb, at_rb; // 底盘的角度解算后的临时输出,待进行限幅
 
-static uint8_t vofa_motor_index = 0;
+static uint8_t vofa_motor_index = 4;
 Chassis_Ctrl_Cmd_s chassis_ctrl_cmd;
 
 static float WrapDeg180(float deg)
@@ -97,7 +97,13 @@ void ChassisVofaSend(void)
     buf[4 * 4 + 2] = 0x80;
     buf[4 * 4 + 3] = 0x7F;
 
+#if CHASSIS_VOFA_ENABLE_UART1
     HAL_UART_Transmit(&huart1, buf, sizeof(buf), 100);
+#endif
+
+#if CHASSIS_VOFA_ENABLE_USB
+    USB_Transmit(buf, sizeof(buf));
+#endif
 }
 
 void ChassisInit()
@@ -230,7 +236,9 @@ void ChassisInit()
         .Derivative_LPF_RC = 0.01, // 0.01
     };
     PIDInit(&chassis_follow_pid, &chassis_follow_pid_conf);
+#if CHASSIS_ENABLE_NAC
 		nac_ctrl = NacInit(&huart1);
+#endif
        chassis_ctrl_cmd.Chassis_IMU_data = INS_Init();
         chassis_ctrl_cmd.correct_mode =  IMU_CORRECT_HYBRID;
         chassis_ctrl_cmd.imu_enable = 1;                       // 使能IMU校准
@@ -466,11 +474,11 @@ void SteeringWheelKinematics(float vx, float vy, float vw)
     // ================== 获取上次角度 (三轮) ==================
     // 注意：假设你的三轮电机指针目前复用原四轮指针：
     // id3(前) -> motor_steering_lf
-    // id1(左后) -> motor_steering_lb
+    // id1(左后) -> motor_steering_rf
     // id2(右后) -> motor_steering_rb
-    // 请根据实际硬件绑定的指针进行调整，这里使用lf/lb/rb代指3/1/2
+    // 请根据实际硬件绑定的指针进行调整，这里使用 lf/rf/rb 代指 3/1/2
     at_3_last = motor_steering_lf->measure.total_angle; // 3号:前
-    at_1_last = motor_steering_lb->measure.total_angle; // 1号:左后
+    at_1_last = motor_steering_rf->measure.total_angle; // 1号:左后
     at_2_last = motor_steering_rb->measure.total_angle; // 2号:右后
     
     // ================== 获取上次角度 (原四轮) ==================
@@ -481,19 +489,28 @@ void SteeringWheelKinematics(float vx, float vy, float vw)
     at_rb_last = motor_steering_rb->measure.total_angle;
     */
 
-    // 首次运行时初始化last_yaw
-    if(first_run_kinematics) {
+    // 完全没有运动指令时不做 IMU 修正，避免静止时由 yaw 漂移触发自转
+    if(vx == 0 && vy == 0 && vw == 0) {
+        chassis_ctrl_cmd.offset_w = 0;
         chassis_ctrl_cmd.last_yaw = chassis_ctrl_cmd.Chassis_IMU_data->Yaw;
-        first_run_kinematics = 0;
+        chassis_vx = 0;
+        chassis_vy = 0;
+        chassis_vw = 0;
+    } else {
+        // 首次运行时初始化 last_yaw
+        if(first_run_kinematics) {
+            chassis_ctrl_cmd.last_yaw = chassis_ctrl_cmd.Chassis_IMU_data->Yaw;
+            first_run_kinematics = 0;
+        }
+
+        // 角速度控制模式，直接用传入 vw，可选叠加 IMU 修正
+        chassis_ctrl_cmd.offset_w = UpdateIMUCorrection(vw);
+        chassis_vw = vw + chassis_ctrl_cmd.offset_w;
+
+        // 设置线速度
+        chassis_vx = vx;
+        chassis_vy = vy;
     }
-
-    // 角速度控制模式，直接用传入vw，可选叠加IMU修正
-    chassis_ctrl_cmd.offset_w = UpdateIMUCorrection(vw);
-    chassis_vw = vw + chassis_ctrl_cmd.offset_w;
-
-    // 设置线速度
-    chassis_vx = vx;
-    chassis_vy = vy;
 
     float w = chassis_vw;
 
@@ -577,7 +594,7 @@ void SteeringWheelKinematics(float vx, float vy, float vw)
 
     if(w == 0 && vx == 0 && vy == 0) {
         DJIMotorSetRef(motor_lf, 0);
-        DJIMotorSetRef(motor_lb, 0);
+        DJIMotorSetRef(motor_rf, 0);
         DJIMotorSetRef(motor_rb, 0);
     } else {
         DJIMotorSetRef(motor_lf, vt_3); // 3号:前

@@ -17,6 +17,12 @@
 
 #define RAD_2_DEGREE        57.2957795f    // 180/pi
 
+// 遥控器调试时的底盘输出开关
+// 若 USART1 需要重新用于 NAC 通讯, 将 CHASSIS_ENABLE_NAC 置 1
+#define CHASSIS_ENABLE_NAC          0
+#define CHASSIS_VOFA_ENABLE_UART1   1
+#define CHASSIS_VOFA_ENABLE_USB     1
+
 // 机器人几何尺寸定义
 // 长410mm, 宽320mm. 假设长为前后方向(轴距), 宽为左右方向(轮距)
 #define CHASSIS_WHEEL_BASE      0.410f      // 轴距(前后轮距离, X轴方向)
@@ -77,8 +83,8 @@
 // ================== 新三轮对齐参数 (待填入实际测量值) ==================
 // 假设：1号为左后，2号为右后，3号为前顶点
 #define STEERING_CHASSIS_ALIGN_ECD_1   2748 // 你测出的1号轮编码器值700
-#define STEERING_CHASSIS_ALIGN_ECD_2   0 // 你测出的2号轮编码器值8011
-#define STEERING_CHASSIS_ALIGN_ECD_3   2054 // 你测出的4号轮编码器值1240
+#define STEERING_CHASSIS_ALIGN_ECD_2   23 // 你测出的2号轮编码器值8011
+#define STEERING_CHASSIS_ALIGN_ECD_3   2031 // 你测出的4号轮编码器值1240
 
 #define STEERING_CHASSIS_ALIGN_ANGLE_1 STEERING_CHASSIS_ALIGN_ECD_1 / 8192.f * 360.f
 #define STEERING_CHASSIS_ALIGN_ANGLE_2 STEERING_CHASSIS_ALIGN_ECD_2 / 8192.f * 360.f
@@ -119,4 +125,3 @@ typedef struct
 } Chassis_Ctrl_Cmd_s;
 #pragma pack() // 取消压缩
 #endif
-
